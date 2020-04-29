@@ -1,4 +1,3 @@
-# 每周总结可以写在这里
 ### Exotic Object
 object that does not have the **default behaviour** for one or more of the essential **internal methods**
 
