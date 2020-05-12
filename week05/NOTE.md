@@ -3,7 +3,7 @@
 #### Realm
 
 通过 BFS 遍历我们的内置对象的所有属性，并且将其可视化。
-![Image of Realm](https://github.com/jzhang026/Frontend-01-Template/tree/master/week05/images/intinsic_object.png)
+![Image of Realm](https://github.com/jzhang026/Frontend-01-Template/blob/master/week05/images/intinsic_object.png)
 
 #### 我们熟悉的 httpClient
 
@@ -41,7 +41,7 @@ Transfer-Encoding: chunked
 ```
 
 我们在本周，自己实现了一个玩具级别的 response parser。并为其编写了单元测试，来保证它的正确性
-![Image of Yaktocat](https://github.com/jzhang026/Frontend-01-Template/tree/master/week05/images/unit-test_response_parser.png)
+![unit test](https://github.com/jzhang026/Frontend-01-Template/blob/master/week05/images/unit-test_response_parser.png)
 并且通过手动验证了，我们可以完整的解析 response
 
 ```
