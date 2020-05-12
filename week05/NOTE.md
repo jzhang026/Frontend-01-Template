@@ -1,6 +1,11 @@
 # 每周总结可以写在这里
 
-###### 我们熟悉的 httpClient
+#### Realm
+
+通过 BFS 遍历我们的内置对象的所有属性，并且将其可视化。
+![Image of Realm](https://github.com/jzhang026/Frontend-01-Template/tree/master/week05/images/intinsic_object.png)
+
+#### 我们熟悉的 httpClient
 
 ```javascript
 let xhr = new XMLHttpRequest();
@@ -10,9 +15,9 @@ xhr.send(null);
 xhr.addEventListener();
 ```
 
-###### http
+##### http
 
-text protocal
+http 是一个应用层，文本协议，他的请求体如下所示：
 
 ```
 // request
@@ -35,12 +40,18 @@ Transfer-Encoding: chunked
 0
 ```
 
-- http method
-  1. OPTIONS
-  2. GET
-  3. HEAD
-  4. POST
-  5. PUT
-  6. DELETE
-  7. TRACE
-  8. CONNECT
+我们在本周，自己实现了一个玩具级别的 response parser。并为其编写了单元测试，来保证它的正确性
+![Image of Yaktocat](https://github.com/jzhang026/Frontend-01-Template/tree/master/week05/images/unit-test_response_parser.png)
+并且通过手动验证了，我们可以完整的解析 response
+
+```
+{ statusCode: 200,
+  statusText: 'OK',
+  headers:
+   { 'Content-Type': 'text/plain',
+     'X-Foo': 'bar',
+     Date: 'Tue, 12 May 2020 10:03:45 GMT',
+     Connection: 'keep-alive',
+     'Transfer-Encoding': 'chunked' },
+  body: 'ok' }
+```
