@@ -83,29 +83,3 @@ void (async function () {
   let res = await request.send();
   console.log(res);
 })();
-// const client = net.createConnection({ host: 'localhost', port: 8088 }, () => {
-//   console.log('connected to server!');
-//   let request = new Request({
-//     method: 'GET',
-//     port: '8088',
-//     headers: { Host: 'localhost' },
-//     body: { name: 'adrian' },
-//   });
-//   client.write(request.toString());
-// });
-// client.on('data', (data) => {
-//   let responseParser = new ResponseParser();
-//   responseParser.receive(data.toString());
-//   const { statusCode, statusText, headers, body } = responseParser;
-//   let response = {
-//     statusCode,
-//     statusText,
-//     headers,
-//     body,
-//   };
-//   console.log(response);
-//   client.end();
-// });
-// client.on('end', () => {
-//   console.log('disconnected from server');
-// });
