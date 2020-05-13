@@ -65,27 +65,20 @@
     // relationShip is the final data we use for the chart.
     let relationShip = { id: 'realm', children: [] };
 
-    let queue = [];
     for (let p of globalProperties) {
-      queue.push({
-        path: [p],
-        object: this[p],
-      });
       relationShip.children.push({ id: p, children: [] });
     }
     let set = new Set();
     let current;
-    let currentChildren;
     let childrenQueue = [].concat(relationShip.children);
 
     // BFS to traverse all the properties
-    while (queue.length) {
-      current = queue.shift();
-      currentChildren = childrenQueue.shift();
-      if (set.has(current.object) || !current.object) continue;
-      set.add(current.object);
-      for (let p of Object.getOwnPropertyNames(current.object)) {
-        const property = Object.getOwnPropertyDescriptor(current.object, p);
+    while (childrenQueue.length) {
+      current = childrenQueue.shift();
+      if (set.has(this[current.id]) || !this[current.id]) continue;
+      set.add(this[current.id]);
+      for (let p of Object.getOwnPropertyNames(this[current.id])) {
+        const property = Object.getOwnPropertyDescriptor(this[current.id], p);
         if (
           property.hasOwnProperty('value') &&
           property.value != null &&
@@ -93,38 +86,25 @@
             typeof property.value == 'function') &&
           property.value instanceof Object
         ) {
-          queue.push({
-            object: property.value,
-            path: current.path.concat(p),
-          });
           let currentProperty = { id: p + ' [[value]]', children: [] };
           childrenQueue.push(currentProperty);
-          currentChildren.children.push(currentProperty);
+          current.children.push(currentProperty);
         }
         if (
           property.hasOwnProperty('get') &&
           typeof property.get == 'function'
         ) {
-          queue.push({
-            object: property.get,
-            path: current.path.concat(p),
-          });
           let currentProperty = { id: p + ' [[get]]', children: [] };
           childrenQueue.push(currentProperty);
-          currentChildren.children.push(currentProperty);
+          current.children.push(currentProperty);
         }
         if (
           property.hasOwnProperty('set') &&
           typeof property.set == 'function'
         ) {
-          queue.push({
-            object: property.set,
-            path: current.path.concat(p),
-            prev: p,
-          });
           let currentProperty = { id: p + ' [[set]]', children: [] };
           childrenQueue.push(currentProperty);
-          currentChildren.children.push(currentProperty);
+          current.children.push(currentProperty);
         }
       }
     }
