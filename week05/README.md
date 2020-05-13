@@ -135,7 +135,10 @@
   }
   ```
 
-  运行完成后的对象关系截图，也可以戳此直接访问[[realm]](https://github.com/jzhang026/Frontend-01-Template/blob/master/week05/realm/realm.html)
+  剩下的可视化过程就很简单了，我们借助 ANTV6 把上面代码运行后得到的 `relationShip` 传入就可以了。
+  我用的是 ANTV 的这个[demo](https://g6.antv.vision/en/examples/tree/mindmap#hCustomSideMindmap)代码片段。
+  也可以戳此直接访问[[完整代码]](https://github.com/jzhang026/Frontend-01-Template/blob/master/week05/realm/realm.html)
+  运行完成后的对象关系截图，
   ![Image of Realm](https://github.com/jzhang026/Frontend-01-Template/blob/master/week05/images/intinsic_object.png)
 
 #### 我们熟悉的 httpClient
