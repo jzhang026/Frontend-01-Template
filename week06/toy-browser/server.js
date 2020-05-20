@@ -19,7 +19,7 @@ const server = http.createServer((req, res) => {
   </head>
   <body>
       <div>
-          <img id="myid"/>
+          <img id="myid" />
           <img />
       </div>
   </body>
