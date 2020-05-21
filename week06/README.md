@@ -109,9 +109,9 @@ function foundF(c) {
 }
 ```
 
-#### html
+## HTML PARSER
 
-我们用 FSM 来解析 HTML，最后生成一个 DOM 树，并且计算 CSS 添加到 DOM 树上。
+####我们用 FSM 来解析 HTML，最后生成一个 DOM 树，并且计算 CSS 添加到 DOM 树上。
 
 最后生成得到的 DOM 树
 
