@@ -115,7 +115,7 @@ function foundF(c) {
 
 最后生成得到的 DOM 树
 
-```
+```json
 {
 	"type": "document",
 	"children": [{
