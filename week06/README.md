@@ -111,118 +111,146 @@ function foundF(c) {
 
 ## HTML PARSER
 
-####我们用 FSM 来解析 HTML，最后生成一个 DOM 树，并且计算 CSS 添加到 DOM 树上。
+#### 我们用 FSM 来解析 HTML，最后生成一个 DOM 树，并且计算 CSS 添加到 DOM 树上。
 
 最后生成得到的 DOM 树
 
 ```json
 {
-	"type": "document",
-	"children": [{
-		"type": "element",
-		"children": [{
-			"type": "text",
-			"content": "\n  "
-		}, {
-			"type": "element",
-			"children": [{
-				"type": "text",
-				"content": "\n      "
-			}, {
-				"type": "element",
-				"children": [{
-					"type": "text",
-					"content": "\n  body div #myid{\n      width:100px;\n      background-color: #ff5000;\n  }\n  body div img{\n      width:30px;\n      background-color: #ff1111;\n  }\n      "
-				}],
-				"attributes": [],
-				"tagName": "style",
-				"parent": "head",
-				"computedStyle": {}
-			}, {
-				"type": "text",
-				"content": "\n  "
-			}],
-			"attributes": [],
-			"tagName": "head",
-			"parent": "html",
-			"computedStyle": {}
-		}, {
-			"type": "text",
-			"content": "\n  "
-		}, {
-			"type": "element",
-			"children": [{
-				"type": "text",
-				"content": "\n      "
-			}, {
-				"type": "element",
-				"children": [{
-					"type": "text",
-					"content": "\n          "
-				}, {
-					"type": "element",
-					"children": [],
-					"attributes": [{
-						"name": "id",
-						"value": "myid"
-					}],
-					"tagName": "img",
-					"parent": "div",
-					"computedStyle": {
-						"width": {
-							"value": "100px",
-							"specificity": [0, 1, 0, 2]
-						},
-						"background-color": {
-							"value": "#ff5000",
-							"specificity": [0, 1, 0, 2]
-						}
-					}
-				}, {
-					"type": "text",
-					"content": "\n          "
-				}, {
-					"type": "element",
-					"children": [],
-					"attributes": [],
-					"tagName": "img",
-					"parent": "div",
-					"computedStyle": {
-						"width": {
-							"value": "30px",
-							"specificity": [0, 0, 0, 3]
-						},
-						"background-color": {
-							"value": "#ff1111",
-							"specificity": [0, 0, 0, 3]
-						}
-					}
-				}, {
-					"type": "text",
-					"content": "\n      "
-				}],
-				"attributes": [],
-				"tagName": "div",
-				"parent": "body",
-				"computedStyle": {}
-			}, {
-				"type": "text",
-				"content": "\n  "
-			}],
-			"attributes": [],
-			"tagName": "body",
-			"parent": "html",
-			"computedStyle": {}
-		}, {
-			"type": "text",
-			"content": "\n  "
-		}],
-		"attributes": [{
-			"name": "maaa",
-			"value": "a"
-		}],
-		"tagName": "html",
-		"computedStyle": {}
-	}]
+  "type": "document",
+  "children": [
+    {
+      "type": "element",
+      "children": [
+        {
+          "type": "text",
+          "content": "\n  "
+        },
+        {
+          "type": "element",
+          "children": [
+            {
+              "type": "text",
+              "content": "\n      "
+            },
+            {
+              "type": "element",
+              "children": [
+                {
+                  "type": "text",
+                  "content": "\n  body div #myid{\n      width:100px;\n      background-color: #ff5000;\n  }\n  body div img{\n      width:30px;\n      background-color: #ff1111;\n  }\n      "
+                }
+              ],
+              "attributes": [],
+              "tagName": "style",
+              "parent": "head",
+              "computedStyle": {}
+            },
+            {
+              "type": "text",
+              "content": "\n  "
+            }
+          ],
+          "attributes": [],
+          "tagName": "head",
+          "parent": "html",
+          "computedStyle": {}
+        },
+        {
+          "type": "text",
+          "content": "\n  "
+        },
+        {
+          "type": "element",
+          "children": [
+            {
+              "type": "text",
+              "content": "\n      "
+            },
+            {
+              "type": "element",
+              "children": [
+                {
+                  "type": "text",
+                  "content": "\n          "
+                },
+                {
+                  "type": "element",
+                  "children": [],
+                  "attributes": [
+                    {
+                      "name": "id",
+                      "value": "myid"
+                    }
+                  ],
+                  "tagName": "img",
+                  "parent": "div",
+                  "computedStyle": {
+                    "width": {
+                      "value": "100px",
+                      "specificity": [0, 1, 0, 2]
+                    },
+                    "background-color": {
+                      "value": "#ff5000",
+                      "specificity": [0, 1, 0, 2]
+                    }
+                  }
+                },
+                {
+                  "type": "text",
+                  "content": "\n          "
+                },
+                {
+                  "type": "element",
+                  "children": [],
+                  "attributes": [],
+                  "tagName": "img",
+                  "parent": "div",
+                  "computedStyle": {
+                    "width": {
+                      "value": "30px",
+                      "specificity": [0, 0, 0, 3]
+                    },
+                    "background-color": {
+                      "value": "#ff1111",
+                      "specificity": [0, 0, 0, 3]
+                    }
+                  }
+                },
+                {
+                  "type": "text",
+                  "content": "\n      "
+                }
+              ],
+              "attributes": [],
+              "tagName": "div",
+              "parent": "body",
+              "computedStyle": {}
+            },
+            {
+              "type": "text",
+              "content": "\n  "
+            }
+          ],
+          "attributes": [],
+          "tagName": "body",
+          "parent": "html",
+          "computedStyle": {}
+        },
+        {
+          "type": "text",
+          "content": "\n  "
+        }
+      ],
+      "attributes": [
+        {
+          "name": "maaa",
+          "value": "a"
+        }
+      ],
+      "tagName": "html",
+      "computedStyle": {}
+    }
+  ]
 }
 ```
