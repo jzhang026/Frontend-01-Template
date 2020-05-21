@@ -82,5 +82,5 @@ void (async function () {
     body: { name: 'adrian' },
   });
   let res = await request.send();
-  console.log(parseHTML(res.body));
+  console.log(JSON.stringify(parseHTML(res.body)));
 })();

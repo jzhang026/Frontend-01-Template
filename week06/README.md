@@ -111,30 +111,116 @@ function foundF(c) {
 
 #### html
 
-1. 我们用 FSM 来实现 html 的分析
-2. 解析标签
-3. 创建元素
-4. 在状态机中，除了状态迁移，我们还要加入业务逻辑
-   1. 我们在标签结束状态提交 token
-5. 总结
-6. 文本节点
+我们用 FSM 来解析 HTML，最后生成一个 DOM 树，并且计算 CSS 添加到 DOM 树上。
 
-#### CSS
-
-1. 收集 css 规则
-2. 第二步 添加调用
-   - 当我们创建一个元素后，立即计算 CSS
-   - 当我们分析一个元素，所有 css 规则已经收集完毕
-   - 在真是浏览器中，可能遇到写在 nody 的 style 标签，需要重新 css 计算的情况，这里我们忽略
-3. 获取父元素序列
-   - 因为我们首先获取的是“当前元素”。 所以我们获得和计算父元素匹配的顺序是从内向外。
-4. 拆分选择器 [vedio] 解析 7:50pm
-   1. 复合选择器
-   2. body .a #id
-5. match 函数 [vedio] 8:09pm
-   1. 根据选择器的类型和元素属性，计算是否与当前元素匹配
-   2. 这里仅仅实现了三种基本选择器
-   3. 作业，实现符合选择器，实现支持空格的 class 选择器
-6. 生成 computed 属性[vedio] 8:40pm
-7. 确定规则覆盖关系 [vedio] 9:05pm
-   1. specifity 9:05pm
+```
+{
+	"type": "document",
+	"children": [{
+		"type": "element",
+		"children": [{
+			"type": "text",
+			"content": "\n  "
+		}, {
+			"type": "element",
+			"children": [{
+				"type": "text",
+				"content": "\n      "
+			}, {
+				"type": "element",
+				"children": [{
+					"type": "text",
+					"content": "\n  body div #myid{\n      width:100px;\n      background-color: #ff5000;\n  }\n  body div img{\n      width:30px;\n      background-color: #ff1111;\n  }\n      "
+				}],
+				"attributes": [],
+				"tagName": "style",
+				"parent": "head",
+				"computedStyle": {}
+			}, {
+				"type": "text",
+				"content": "\n  "
+			}],
+			"attributes": [],
+			"tagName": "head",
+			"parent": "html",
+			"computedStyle": {}
+		}, {
+			"type": "text",
+			"content": "\n  "
+		}, {
+			"type": "element",
+			"children": [{
+				"type": "text",
+				"content": "\n      "
+			}, {
+				"type": "element",
+				"children": [{
+					"type": "text",
+					"content": "\n          "
+				}, {
+					"type": "element",
+					"children": [],
+					"attributes": [{
+						"name": "id",
+						"value": "myid"
+					}],
+					"tagName": "img",
+					"parent": "div",
+					"computedStyle": {
+						"width": {
+							"value": "100px",
+							"specificity": [0, 1, 0, 2]
+						},
+						"background-color": {
+							"value": "#ff5000",
+							"specificity": [0, 1, 0, 2]
+						}
+					}
+				}, {
+					"type": "text",
+					"content": "\n          "
+				}, {
+					"type": "element",
+					"children": [],
+					"attributes": [],
+					"tagName": "img",
+					"parent": "div",
+					"computedStyle": {
+						"width": {
+							"value": "30px",
+							"specificity": [0, 0, 0, 3]
+						},
+						"background-color": {
+							"value": "#ff1111",
+							"specificity": [0, 0, 0, 3]
+						}
+					}
+				}, {
+					"type": "text",
+					"content": "\n      "
+				}],
+				"attributes": [],
+				"tagName": "div",
+				"parent": "body",
+				"computedStyle": {}
+			}, {
+				"type": "text",
+				"content": "\n  "
+			}],
+			"attributes": [],
+			"tagName": "body",
+			"parent": "html",
+			"computedStyle": {}
+		}, {
+			"type": "text",
+			"content": "\n  "
+		}],
+		"attributes": [{
+			"name": "maaa",
+			"value": "a"
+		}],
+		"tagName": "html",
+		"computedStyle": {}
+	}]
+}
+```
