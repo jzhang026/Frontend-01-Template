@@ -4,7 +4,7 @@
 
 #### 我们用 FSM 来解析 HTML，最后生成一个 DOM 树，并且计算 CSS 添加到 DOM 树上。
 
-##### 在 weinter 代码的基础上实现了 css 复合选择器
+##### 实现 css 复合选择器
 
 1. 在构建 dom 树的时候，为元素添加氟元素指针`parent`
 2. 每个元素有个属性`nthChild`来记录自己是父元素的第几个 child
@@ -14,7 +14,7 @@
 - 相邻兄弟选择器 `+`
   - 道理同上 body div + p 看成两段 [body div] 和 [p]，然后用下面的`match`函数去递归的匹配
 - 通用兄弟选择器 `~`
-  - - 道理同上 body div ~ p 看成两段 [body div] 和 [p]，然后用下面的`match`函数去递归的匹配
+  - 道理同上 body div ~ p 看成两段 [body div] 和 [p]，然后用下面的`match`函数去递归的匹配
 
 ```javascript
 function match(element, selectors) {
@@ -33,12 +33,12 @@ function match(element, selectors) {
       // 子选择器
       case '>':
         return match(currentElementParent, selectors.slice(0, i));
-
+      // 通用兄弟选择器
       case '~':
         return immediaSiblings
           .slice(0, currentElement.nthChild)
           .some((element) => match(element, selectors.slice(0, i)));
-
+      // 相邻兄弟选择器
       case '+':
         return match(
           immediaSiblings[currentElement.nthChild - 1],
