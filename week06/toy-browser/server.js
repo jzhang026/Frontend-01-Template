@@ -15,6 +15,9 @@ const server = http.createServer((req, res) => {
       width:31px;
       background-color: #ff1111;
   }
+  div + p {
+      colore: red;
+  }
       </style>
   </head>
   <body>
@@ -22,6 +25,7 @@ const server = http.createServer((req, res) => {
           <img id="myid" />
           <img />
       </div>
+      <p> I am red </p>
   </body>
   </html>`);
 });

@@ -34,37 +34,74 @@ function compare(existing, current) {
   }
   return 0;
 }
-function match(element, selector) {
-  if (!element || !selector) return false;
-  const type = selector.charAt(0);
-  let attribute;
-  switch (type) {
-    case '#':
-      attribute = element.attributes.find((attr) => attr.name === 'id');
-      if (attribute && attribute.value === selector.replace('#', ''))
-        return true;
-      break;
-    case '.':
-      attribute = element.attributes.find((attr) => attr.name === 'class');
-      if (attribute && attribute.value === selector.replace('.', ''))
-        return true;
-      break;
-    default:
-      if (element.tagName === selector) return true;
+function match(element, selectors) {
+  if (!element || selectors.length === 0) return false;
+  let currentElement = element;
+
+  let i = selectors.length - 1;
+  let currentSelector = selectors[i];
+
+  while (i >= 0 && currentElement) {
+    let currentElementParent = currentElement.parent;
+    let immediaSiblings = currentElementParent.children.filter(
+      (element) => element.tagName
+    );
+    switch (currentSelector) {
+      case '>':
+        return match(currentElementParent, selectors.slice(0, i));
+
+      case '~':
+        return immediaSiblings
+          .slice(0, currentElement.nthChild)
+          .some((element) => match(element, selectors.slice(0, i)));
+
+      case '+':
+        return match(
+          immediaSiblings[currentElement.nthChild - 1],
+          selectors.slice(0, i)
+        );
+      default:
+        const type = currentSelector.charAt(0);
+        let attribute;
+        switch (type) {
+          case '#':
+            attribute = currentElement.attributes.find(
+              (attr) => attr.name === 'id'
+            );
+            if (
+              attribute &&
+              attribute.value === currentSelector.replace('#', '')
+            )
+              currentSelector = selectors[--i];
+            break;
+          case '.':
+            attribute = currentElement.attributes.find(
+              (attr) => attr.name === 'class'
+            );
+            if (
+              attribute &&
+              attribute.value === currentSelector.replace('.', '')
+            )
+              currentSelector = selectors[--i];
+            break;
+          default:
+            if (currentElement.tagName == currentSelector)
+              currentSelector = selectors[--i];
+        }
+        if (i === selectors.length - 1) return false;
+        if (!['<', '~', '+'].includes(currentSelector)) {
+          currentElement = currentElement.parent;
+        }
+    }
   }
+  if (i < 0) return true;
   return false;
 }
 function computeCss(element, stack) {
   const parents = stack.slice().reverse();
   element.computedStyle = element.computedStyle || {};
   for (const rule of rules) {
-    const selectors = rule.selectors[0].split(' ').reverse();
-    if (!match(element, selectors[0])) continue;
-    let j = 1;
-    for (let i = 0; i < parents.length; i++) {
-      if ((match(parents[i]), selectors[j])) j++;
-    }
-    if (j === selectors.length) {
+    if (match(element, rule.selectors[0].split(' '))) {
       const weight = specificity(rule.selectors[0]);
       const computedStyle = element.computedStyle;
       for (let declaration of rule.declarations) {
