@@ -28,9 +28,11 @@
 ```javascript
 // 我们可以用当前state， 下一个输入的字符，以及模式串 来算出下一个状态
 function getNextState(pattern, state, currentCharacter) {
+  // 如果当前状态下，输入的字符正好是我们模式串的下一个字符，直接将state+1
+  // 表示我们可以去和模式串的下一个字符比较了
   if (state < pattern.length && currentCharacter == pattern[state])
     return state + 1;
-  // 如果没匹配，找最长前缀,放入状态转移table
+  // 如果没匹配，那我们就循环的找最长前缀,放入状态转移table
   for (let prefixLength = state - 1; prefixLength > 0; prefixLength--) {
     for (let i = 0; i <= prefixLength; i++) {
       if (pattern[i + 1] !== pattern[prefixLength]) break;
