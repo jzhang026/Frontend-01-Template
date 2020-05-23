@@ -20,7 +20,8 @@
 | 4 | 5 | 0| 0|a|
 | 5 | 1 | 4 | 6 |c|
 | 6 | 7 | 0| 0| a|
-| 7 | 1| 2|0 |
+| 7 | 1| 2|0 |状态到这里，说明成功匹配|
+
 对应的状态转移图
 
 ![Image of State](https://github.com/jzhang026/Frontend-01-Template/blob/master/week06/images/state-transit.jpg)
