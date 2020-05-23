@@ -5,9 +5,10 @@
 原理：
 
 假设我们有
-* 主串为 `abababacaba`
-* 模式串（pattern）为 `ababaca`
-因为 pattern 的长度为 7，所以我们定义 8 种状态，这 8 种状态就是 0 到 7， 可以理解为状态机在运行过程中匹配到了模式串的第几个字符，就表示第几个状态。
+
+- 主串为 `abababacaba`
+- 模式串（pattern）为 `ababaca`
+  因为 pattern 的长度为 7，所以我们定义 8 种状态，这 8 种状态就是 0 到 7， 可以理解为状态机在运行过程中匹配到了模式串的第几个字符，就表示第几个状态。
 
 那我们的状态转移表为：
 | State | a | b | c | Pattern |
@@ -24,6 +25,7 @@
 有了状态转移表。我们就能很容易的写出状态机模型的字符串匹配。
 所以这里的关键就是构建状态转移表。
 我们这里只考虑 ascii 码，也就是 codePoint 从 0 到 255 的字符。
+戳此访问[[完整代码]](https://github.com/jzhang026/Frontend-01-Template/blob/master/week06/KMP-state-machine/kmp-with-state-machine.js) 以及 [[单元测试]](https://github.com/jzhang026/Frontend-01-Template/blob/master/week06/KMP-state-machine/kmp.test.js)
 
 ```javascript
 // 我们可以用当前state， 下一个输入的字符，以及模式串 来算出下一个状态
