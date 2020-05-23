@@ -28,12 +28,15 @@
 戳此访问[[完整代码]](https://github.com/jzhang026/Frontend-01-Template/blob/master/week06/KMP-state-machine/kmp-with-state-machine.js) 以及 [[单元测试]](https://github.com/jzhang026/Frontend-01-Template/blob/master/week06/KMP-state-machine/kmp.test.js)
 
 ```javascript
-// 我们可以用当前state， 下一个输入的字符，以及模式串 来算出下一个状态
+//[请注意]
+// 这里的状态机状态（state)是一个数字，表示状态机在运行过程中匹配到了模式串的第几个字符，就表示第几个状态。
+
 function getNextState(pattern, state, currentCharacter) {
   // 如果当前状态下，输入的字符正好是我们模式串的下一个字符，直接将state+1
   // 表示我们可以去和模式串的下一个字符比较了
   if (state < pattern.length && currentCharacter == pattern[state])
     return state + 1;
+
   // 如果没匹配，那我们就循环的找最长前缀,放入状态转移table
   for (let prefixLength = state - 1; prefixLength > 0; prefixLength--) {
     for (let i = 0; i <= prefixLength; i++) {
@@ -49,6 +52,7 @@ function computeStateTable(pattern) {
   let stateTable = [];
   for (let state = 0; state < pattern.length + 1; state++) {
     stateTable.push([]);
+
     // 能够输入的只有255哥字符。所以我们只处理255的长度
     for (let charCode = 0; charCode < 256; charCode++) {
       stateTable[state] = stateTable[state] || [];
