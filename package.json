@@ -10,6 +10,7 @@
     "prettier": "2.0.5"
   },
   "dependencies": {
-    "css": "^2.2.4"
+    "css": "^2.2.4",
+    "images": "^3.0.2"
   }
 }

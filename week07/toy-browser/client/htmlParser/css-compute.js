@@ -43,9 +43,9 @@ function match(element, selectors) {
 
   while (i >= 0 && currentElement) {
     let currentElementParent = currentElement.parent;
-    let immediaSiblings = currentElementParent.children.filter(
-      (element) => element.tagName
-    );
+    let immediaSiblings = currentElementParent
+      ? currentElementParent.children.filter((element) => element.tagName)
+      : [];
     switch (currentSelector) {
       case '>':
         return match(currentElementParent, selectors.slice(0, i));

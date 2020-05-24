@@ -1,4 +1,6 @@
 const net = require('net');
+const images = require('images');
+const render = require('./htmlParser/render');
 const ResponseParser = require('./response-parser');
 const parseHTML = require('./htmlParser/html-parser').parseHTML;
 class Request {
@@ -82,17 +84,22 @@ void (async function () {
     body: { name: 'adrian' },
   });
   let res = await request.send();
-  console.log(
-    JSON.stringify(
-      parseHTML(res.body),
-      function replacer(key, value) {
-        // Filtering out properties
-        if (key === 'parent') {
-          return value.tagName;
-        }
-        return value;
-      },
-      2
-    )
-  );
+  // console.log(
+  //   JSON.stringify(
+  //     parseHTML(res.body),
+  //     function replacer(key, value) {
+  //       // Filtering out properties
+  //       if (key === 'parent') {
+  //         return value.tagName;
+  //       }
+  //       return value;
+  //     },
+  //     2
+  //   )
+  // );
+  let viewport = images(800, 600);
+  let dom = parseHTML(res.body);
+  render(viewport, dom);
+
+  viewport.save('viewport.jpg');
 })();
