@@ -89,7 +89,7 @@ function match(element, selectors) {
               currentSelector = selectors[--i];
         }
         if (i === selectors.length - 1) return false;
-        if (!['<', '~', '+'].includes(currentSelector)) {
+        if (!['>', '~', '+'].includes(currentSelector)) {
           currentElement = currentElement.parent;
         }
     }

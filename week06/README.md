@@ -161,7 +161,7 @@ function match(element, selectors) {
               currentSelector = selectors[--i];
         }
         if (i === selectors.length - 1) return false;
-        if (!['<', '~', '+'].includes(currentSelector)) {
+        if (!['>', '~', '+'].includes(currentSelector)) {
           currentElement = currentElement.parent;
         }
     }
@@ -218,12 +218,14 @@ function computeCss(element, stack) {
               "children": [
                 {
                   "type": "text",
-                  "content": "\n  body div #myid{\n      width:100px;\n      background-color: #ff5000;\n  }\n  body div img{\n      width:30px;\n      background-color: #ff1111;\n  }\n      "
+                  "content": "\n  body div #myid{\n      width:100px;\n      background-color: #ff5000;\n  }\n  body img{\n      width:31px;\n      background-color: #ff1111;\n  }\n  div + p {\n      colore: red;\n  }\n  div ~ p {\n    background-color: red;\n  }\n  div > p {\n      color: blue;\n  }\n      "
                 }
               ],
+              "childLength": 0,
               "attributes": [],
               "tagName": "style",
               "parent": "head",
+              "nthChild": 0,
               "computedStyle": {}
             },
             {
@@ -231,9 +233,11 @@ function computeCss(element, stack) {
               "content": "\n  "
             }
           ],
+          "childLength": 1,
           "attributes": [],
           "tagName": "head",
           "parent": "html",
+          "nthChild": 0,
           "computedStyle": {}
         },
         {
@@ -252,11 +256,36 @@ function computeCss(element, stack) {
               "children": [
                 {
                   "type": "text",
+                  "content": "\n        "
+                },
+                {
+                  "type": "element",
+                  "children": [
+                    {
+                      "type": "text",
+                      "content": "I am blue"
+                    }
+                  ],
+                  "childLength": 0,
+                  "attributes": [],
+                  "tagName": "p",
+                  "parent": "div",
+                  "nthChild": 0,
+                  "computedStyle": {
+                    "color": {
+                      "value": "blue",
+                      "specificity": [0, 0, 0, 3]
+                    }
+                  }
+                },
+                {
+                  "type": "text",
                   "content": "\n          "
                 },
                 {
                   "type": "element",
                   "children": [],
+                  "childLength": 0,
                   "attributes": [
                     {
                       "name": "id",
@@ -265,6 +294,7 @@ function computeCss(element, stack) {
                   ],
                   "tagName": "img",
                   "parent": "div",
+                  "nthChild": 1,
                   "computedStyle": {
                     "width": {
                       "value": "100px",
@@ -283,38 +313,126 @@ function computeCss(element, stack) {
                 {
                   "type": "element",
                   "children": [],
+                  "childLength": 0,
                   "attributes": [],
                   "tagName": "img",
                   "parent": "div",
+                  "nthChild": 2,
                   "computedStyle": {
                     "width": {
-                      "value": "30px",
-                      "specificity": [0, 0, 0, 3]
+                      "value": "31px",
+                      "specificity": [0, 0, 0, 2]
                     },
                     "background-color": {
                       "value": "#ff1111",
-                      "specificity": [0, 0, 0, 3]
+                      "specificity": [0, 0, 0, 2]
                     }
                   }
+                },
+                {
+                  "type": "text",
+                  "content": "\n          \n          "
+                },
+                {
+                  "type": "element",
+                  "children": [
+                    {
+                      "type": "element",
+                      "children": [
+                        {
+                          "type": "text",
+                          "content": "I am not blue"
+                        }
+                      ],
+                      "childLength": 0,
+                      "attributes": [],
+                      "tagName": "p",
+                      "parent": "span",
+                      "nthChild": 0,
+                      "computedStyle": {}
+                    }
+                  ],
+                  "childLength": 1,
+                  "attributes": [],
+                  "tagName": "span",
+                  "parent": "div",
+                  "nthChild": 3,
+                  "computedStyle": {}
                 },
                 {
                   "type": "text",
                   "content": "\n      "
                 }
               ],
+              "childLength": 4,
               "attributes": [],
               "tagName": "div",
               "parent": "body",
+              "nthChild": 0,
               "computedStyle": {}
+            },
+            {
+              "type": "text",
+              "content": "\n      "
+            },
+            {
+              "type": "element",
+              "children": [
+                {
+                  "type": "text",
+                  "content": " I am red "
+                }
+              ],
+              "childLength": 0,
+              "attributes": [],
+              "tagName": "p",
+              "parent": "body",
+              "nthChild": 1,
+              "computedStyle": {
+                "colore": {
+                  "value": "red",
+                  "specificity": [0, 0, 0, 3]
+                },
+                "background-color": {
+                  "value": "red",
+                  "specificity": [0, 0, 0, 3]
+                }
+              }
+            },
+            {
+              "type": "text",
+              "content": "\n      "
+            },
+            {
+              "type": "element",
+              "children": [
+                {
+                  "type": "text",
+                  "content": " I am not red"
+                }
+              ],
+              "childLength": 0,
+              "attributes": [],
+              "tagName": "p",
+              "parent": "body",
+              "nthChild": 2,
+              "computedStyle": {
+                "background-color": {
+                  "value": "red",
+                  "specificity": [0, 0, 0, 3]
+                }
+              }
             },
             {
               "type": "text",
               "content": "\n  "
             }
           ],
+          "childLength": 3,
           "attributes": [],
           "tagName": "body",
           "parent": "html",
+          "nthChild": 1,
           "computedStyle": {}
         },
         {
@@ -322,6 +440,7 @@ function computeCss(element, stack) {
           "content": "\n  "
         }
       ],
+      "childLength": 2,
       "attributes": [
         {
           "name": "maaa",
@@ -329,8 +448,10 @@ function computeCss(element, stack) {
         }
       ],
       "tagName": "html",
+      "nthChild": 0,
       "computedStyle": {}
     }
-  ]
+  ],
+  "childLength": 1
 }
 ```

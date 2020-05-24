@@ -18,14 +18,24 @@ const server = http.createServer((req, res) => {
   div + p {
       colore: red;
   }
+  div ~ p {
+    background-color: red;
+  }
+  div > p {
+      color: blue;
+  }
       </style>
   </head>
   <body>
       <div>
-          <img id="myid" />
-          <img />
+        <p>I am blue</p>
+        <img id="myid" />
+        <img />
+        
+        <span><p>I am not blue</p></span>
       </div>
       <p> I am red </p>
+      <p> I am not red</p>
   </body>
   </html>`);
 });

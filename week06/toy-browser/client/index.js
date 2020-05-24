@@ -82,5 +82,17 @@ void (async function () {
     body: { name: 'adrian' },
   });
   let res = await request.send();
-  console.log(parseHTML(res.body));
+  console.log(
+    JSON.stringify(
+      parseHTML(res.body),
+      function replacer(key, value) {
+        // Filtering out properties
+        if (key === 'parent') {
+          return value.tagName;
+        }
+        return value;
+      },
+      2
+    )
+  );
 })();
