@@ -29,13 +29,15 @@ const server = http.createServer((req, res) => {
   <body>
       <div>
         <p>I am blue</p>
-        <img id="myid" />
+        <aa class='add'> asdfas</aa>
+        <img id="myid" class='ads' />
         <img />
         
         <span><p>I am not blue</p></span>
       </div>
       <p> I am red </p>
       <p> I am not red</p>
+      
   </body>
   </html>`);
 });

@@ -260,6 +260,9 @@ function afterQuptedAttributeValue(c) {
       break;
     default:
       // This is a missing-whitespace-between-attributes parse error.
+      currentToken[currentAttributeName] = currentAttributeValue;
+      currentAttributeName = null;
+      currentAttributeValue = null;
       return beforeAttributeName(c);
   }
 }
