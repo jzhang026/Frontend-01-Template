@@ -24,6 +24,9 @@ const server = http.createServer((req, res) => {
   div > p {
       color: blue;
   }
+  .example {
+      font-size: 14px;
+  }
       </style>
   </head>
   <body>
@@ -33,11 +36,11 @@ const server = http.createServer((req, res) => {
         <img id="myid" class='ads' />
         <img />
         
-        <span><p>I am not blue</p></span>
+        <em><p class="example" >I am not blue</p></em>
       </div>
       <p> I am red </p>
       <p> I am not red</p>
-      
+      <span class="example" > test class </span>
   </body>
   </html>`);
 });
