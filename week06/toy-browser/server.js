@@ -40,7 +40,7 @@ const server = http.createServer((req, res) => {
       </div>
       <p> I am red </p>
       <p> I am not red</p>
-      <span class="example" > test class </span>
+      <span class="example"> test class </span>
   </body>
   </html>`);
 });

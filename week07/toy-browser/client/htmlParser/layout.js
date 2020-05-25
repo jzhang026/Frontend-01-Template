@@ -207,6 +207,7 @@ function layout(element) {
         }
       } else {
         let currentMain, gap;
+
         if (style.justifyContent === 'flex-start') {
           currentMain = mainBase;
           gap = 0;
@@ -233,6 +234,7 @@ function layout(element) {
         }
         for (let i = 0; i < items.length; i++) {
           const item = items[i];
+          const itemStyle = getStyle(item);
           itemStyle[mainStart] = currentMain;
           itemStyle[mainEnd] =
             itemStyle[mainStart] + mainSign * itemStyle[mainSize];
