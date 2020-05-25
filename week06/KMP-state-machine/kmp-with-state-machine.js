@@ -6,9 +6,13 @@ function getNextState(pattern, state, currentCharacter) {
   // 如果没匹配，找最长前缀,放入状态转移table
   // 最长前缀就是KMP中的所谓的好前缀与坏字符
   // 好前缀的长度就是我们下一个状态要转移去的状态
-  for (let prefixLength = state - 1; prefixLength > 0; prefixLength--) {
-    for (let i = 0; i <= prefixLength; i++) {
-      if (pattern[i + 1] !== pattern[prefixLength]) break;
+  for (let prefixLength = state; prefixLength > 0; prefixLength--) {
+    if (pattern[prefixLength - 1] === currentCharacter) {
+      let i = 0;
+      while (i < prefixLength - 1) {
+        if (pattern[i] != pattern[state - prefixLength + 1 + i]) break;
+        i++;
+      }
       if (i == prefixLength - 1) return prefixLength;
     }
   }
@@ -20,7 +24,7 @@ function computeStateTable(pattern) {
   let stateTable = [];
   for (let state = 0; state < pattern.length + 1; state++) {
     stateTable.push([]);
-    // 能够输入的只有255哥字符。所以我们只处理255的长度
+    // 能够输入的只有256种ascii字符。所以我们针对这255种字符建立状态转移表
     for (let charCode = 0; charCode < 256; charCode++) {
       stateTable[state] = stateTable[state] || [];
       stateTable[state][charCode] = getNextState(
