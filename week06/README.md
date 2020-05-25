@@ -37,15 +37,19 @@
 // 这里的状态机状态（state)是一个数字，表示状态机在运行过程中匹配到了模式串的第几个字符，就表示第几个状态。
 
 function getNextState(pattern, state, currentCharacter) {
-  // 如果当前状态下，输入的字符正好是我们模式串的下一个字符，直接将state+1
-  // 表示我们可以去和模式串的下一个字符比较了
   if (state < pattern.length && currentCharacter == pattern[state])
     return state + 1;
 
-  // 如果没匹配，那我们就循环的找最长前缀,放入状态转移table
-  for (let prefixLength = state - 1; prefixLength > 0; prefixLength--) {
-    for (let i = 0; i <= prefixLength; i++) {
-      if (pattern[i + 1] !== pattern[prefixLength]) break;
+  // 如果没匹配，找最长前缀,放入状态转移table
+  // 最长前缀就是KMP中的所谓的好前缀与坏字符
+  // 好前缀的长度就是我们下一个状态要转移去的状态
+  for (let prefixLength = state; prefixLength > 0; prefixLength--) {
+    if (pattern[prefixLength - 1] === currentCharacter) {
+      let i = 0;
+      while (i < prefixLength - 1) {
+        if (pattern[i] != pattern[state - prefixLength + 1 + i]) break;
+        i++;
+      }
       if (i == prefixLength - 1) return prefixLength;
     }
   }
