@@ -62,7 +62,7 @@ function computeStateTable(pattern) {
   for (let state = 0; state < pattern.length + 1; state++) {
     stateTable.push([]);
 
-    // 能够输入的只有255哥字符。所以我们只处理255的长度
+    // [构造状态转移表]我们为ascii码从0到255的字符创建状态转移表
     for (let charCode = 0; charCode < 256; charCode++) {
       stateTable[state] = stateTable[state] || [];
       stateTable[state][charCode] = getNextState(
