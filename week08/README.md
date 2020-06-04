@@ -3,6 +3,7 @@
 你可以将下面这份代码贴到任意一个网页的控制台。
 然后 `match(selectors, domElement)` 来调用。
 
+同时关于这份代码 我更新了一个Gist， 也可以在这里查看 https://gist.github.com/jzhang026/a802cb6b8b62267cb080c7d8bf787c89
 ##### 这里的 `selectors` 支持:
 
 1. 复合选择器`~`, `+`, `>`
