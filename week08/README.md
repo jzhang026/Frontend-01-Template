@@ -3,7 +3,8 @@
 你可以将下面这份代码贴到任意一个网页的控制台。
 然后 `match(selectors, domElement)` 来调用。
 
-同时关于这份代码 我更新了一个Gist， 也可以在这里查看 https://gist.github.com/jzhang026/a802cb6b8b62267cb080c7d8bf787c89
+同时关于这份代码 我更新了一个 Gist， 也可以在这里查看 https://gist.github.com/jzhang026/a802cb6b8b62267cb080c7d8bf787c89
+
 ##### 这里的 `selectors` 支持:
 
 1. 复合选择器`~`, `+`, `>`
@@ -199,36 +200,42 @@ function match(selector, element) {
 
       default:
         const parsedSelectors = complexParser.parse(currentSelector);
+        let numberOfTypes = Object.keys(parsedSelectors).length;
         for (let selectorType in parsedSelectors) {
-          if (
-            selectorType === 'id' &&
-            currentElement.getAttribute('id') === parsedSelectors.id
-          )
-            continue;
-          else if (selectorType === 'attributes') {
-            let attributes = Object.keys(parsedSelectors.attributes);
-            let isAttributesMatch = attributes.every(
-              (attr) =>
-                parsedSelectors.attributes[attr] ===
-                currentElement.getAttribute(attr)
-            );
-            if (!isAttributesMatch) return false;
-          } else if (selectorType === 'class') {
-            let domClass = currentElement.getAttribute('class');
-            let classList = domClass ? domClass.split(' ') : [];
-            let isClassMatch = parsedSelectors.class.every((cls) =>
-              classList.includes(cls)
-            );
-            if (!isClassMatch) return false;
-          } else if (selectorType === 'tag') {
-            let isTagNameMatch =
-              parsedSelectors.tag.toUpperCase() ===
-              currentElement.tagName.toUpperCase();
-            if (!isTagNameMatch) return false;
+          let isMatched = false;
+          switch (selectorType) {
+            case 'id':
+              isMatched =
+                currentElement.getAttribute('id') !== parsedSelectors.id;
+              break;
+
+            case 'attributes':
+              let attributes = Object.keys(parsedSelectors.attributes);
+              isMatched = attributes.every(
+                (attr) =>
+                  parsedSelectors.attributes[attr] ===
+                  currentElement.getAttribute(attr)
+              );
+              break;
+
+            case 'class':
+              let domClass = currentElement.getAttribute('class');
+              let classList = domClass ? domClass.split(' ') : [];
+              isMatched = parsedSelectors.class.every((cls) =>
+                classList.includes(cls)
+              );
+              break;
+
+            case 'tag':
+              isMatched =
+                parsedSelectors.tag.toUpperCase() ===
+                currentElement.tagName.toUpperCase();
           }
+          if (!isMatched) break;
+          numberOfTypes--;
         }
 
-        currentSelector = selectors[--i];
+        if (numberOfTypes === 0) currentSelector = selectors[--i];
         if (!['>', '~', '+'].includes(currentSelector)) {
           currentElement = currentElement.parentElement;
         }
