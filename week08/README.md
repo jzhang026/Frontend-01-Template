@@ -5,7 +5,7 @@
 
 同时关于这份代码 我更新了一个 Gist， 也可以在这里查看 https://gist.github.com/jzhang026/a802cb6b8b62267cb080c7d8bf787c89
 
-##### 工作原理解释：
+###工作原理解释：
 
 代码分为两个部分：
 
@@ -35,6 +35,7 @@ class ParseComplexSelector {
     this.attributeValue = '';
     this.EOF = Symbol('EOF');
 
+    // state functions
     this.dataState = this.dataState.bind(this);
     this.idState = this.idState.bind(this);
     this.classState = this.classState.bind(this);
