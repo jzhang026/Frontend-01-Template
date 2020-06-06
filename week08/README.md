@@ -5,10 +5,25 @@
 
 同时关于这份代码 我更新了一个 Gist， 也可以在这里查看 https://gist.github.com/jzhang026/a802cb6b8b62267cb080c7d8bf787c89
 
-##### 这里的 `selectors` 支持:
+##### 工作原理解释：
 
-1. 复合选择器`~`, `+`, `>`
-2. 复杂选择器，比如 `div + #my-id.my-class.another-class[name=value]`
+代码分为两个部分：
+
+1. class `ParseComplexSelector`
+   通过使用 state machine 来解析我们传入的复杂选择器，具体的用例可以参考的[单元测试](https://github.com/jzhang026/Frontend-01-Template/blob/master/week08/match-dom-css.test.js)
+
+2. `match`函数
+   真正用来做 DOM 和 CSS 选择器的匹配判断。这里的 `selectors` 支持:
+
+   1. 复合选择器`~`, `+`, `>`
+   2. 复杂选择器，比如 `div + #my-id.my-class.another-class[name=value]`
+   3. 各种属性选择器：
+      1. `[attr=value]`
+      2. `[attr~=value]`
+      3. `[attr^=value]`
+      4. `[attr$=value]`
+      5. `[attr*=value]`
+      6. `[attr|=value]`
 
 ```javascript
 // parse complex css selectors, such as 'div#my-id.my-class[foo=bar]'
@@ -19,12 +34,24 @@ class ParseComplexSelector {
     this.attributeName = '';
     this.attributeValue = '';
     this.EOF = Symbol('EOF');
+
     this.dataState = this.dataState.bind(this);
     this.idState = this.idState.bind(this);
     this.classState = this.classState.bind(this);
     this.tagNameState = this.tagNameState.bind(this);
     this.attributeNameState = this.attributeNameState.bind(this);
     this.attributeValueState = this.attributeValueState.bind(this);
+    this.afterQuptedAttributeValue = this.afterQuptedAttributeValue.bind(this);
+    this.unquotedAttributeValueState = this.unquotedAttributeValueState.bind(
+      this
+    );
+    this.waitEqualSignForAttributeValueList = this.waitEqualSignForAttributeValueList.bind(
+      this
+    );
+    this.doubleQuotedValueState = this.doubleQuotedValueState.bind(this);
+    this.singleQuotedValueState = this.singleQuotedValueState.bind(this);
+    this.waitingCaseSensitiveFlag = this.waitingCaseSensitiveFlag.bind(this);
+    this.afterCaseSensitiveFlag = this.afterCaseSensitiveFlag.bind(this);
   }
   parse(selectorStr) {
     let state = this.dataState;
@@ -53,7 +80,29 @@ class ParseComplexSelector {
         break;
       case 'attribute':
         this.selector.attributes = this.selector.attributes || {};
-        this.selector.attributes[this.attributeName] = this.attributeValue;
+        let currentAttributePair = this.selector.attributes[this.attributeName];
+        let isCaseInsensitive = currentAttributePair.isCaseInsensitive;
+        switch (currentAttributePair.type) {
+          case 'valueList':
+            currentAttributePair.value = this.attributeValue.split(' ');
+            if (isCaseInsensitive) {
+              currentAttributePair.value = currentAttributePair.value.map(
+                (ele) => ele.toLowerCase()
+              );
+            }
+            break;
+          case 'exactlyValue':
+          case 'valuePrefix':
+          case 'valueSuffix':
+          case 'valueSuffix':
+          case 'valueIncluds':
+          case 'valueSubMatch':
+            currentAttributePair.value = isCaseInsensitive
+              ? this.attributeValue.toLowerCase()
+              : this.attributeValue;
+            break;
+        }
+
         this.attributeName = '';
         this.attributeValue = '';
         break;
@@ -141,20 +190,84 @@ class ParseComplexSelector {
       this.attributeName += c;
       return this.attributeNameState;
     }
+    this.selector.attributes = this.selector.attributes || {};
+    let currentAttribute = (this.selector.attributes[this.attributeName] = {});
     switch (c) {
       case '=':
+        currentAttribute.type = 'exactlyValue';
         return this.attributeValueState;
+      case '~':
+        currentAttribute.type = 'valueList';
+        return this.waitEqualSignForAttributeValueList;
+      case '|':
+        currentAttribute.type = 'valueSubMatch';
+        return this.waitEqualSignForAttributeValueList;
+      case '^':
+        currentAttribute.type = 'valuePrefix';
+        return this.waitEqualSignForAttributeValueList;
+      case '$':
+        currentAttribute.type = 'valueSuffix';
+        return this.waitEqualSignForAttributeValueList;
+      case '*':
+        currentAttribute.type = 'valueIncluds';
+        return this.waitEqualSignForAttributeValueList;
       case this.EOF:
       default:
         throw new Error('some errors in your selector');
     }
   }
+  waitEqualSignForAttributeValueList(c) {
+    if (c === '=') return this.attributeValueState;
+    else throw new Error('some errors in your selector');
+  }
+
   attributeValueState(c) {
-    if (c.match && c.match(/^[a-zA-Z0-9\-_]$/)) {
-      this.attributeValue += c;
-      return this.attributeValueState;
-    }
     switch (c) {
+      case ']':
+        this.emit({
+          type: 'attribute',
+        });
+        return this.dataState;
+      case '\u0022': // quotation mark "
+        return this.doubleQuotedValueState;
+      case '\u0027': // quotation mark "
+        return this.singleQuotedValueState;
+      default:
+        return this.unquotedAttributeValueState(c);
+    }
+  }
+  unquotedAttributeValueState(c) {
+    switch (c) {
+      case ']':
+        this.emit({
+          type: 'attribute',
+        });
+        return this.dataState;
+      case ' ':
+        return this.waitingCaseSensitiveFlag;
+      default:
+        this.attributeValue += c;
+        return this.unquotedAttributeValueState;
+    }
+  }
+  waitingCaseSensitiveFlag(c) {
+    if (c === ' ') return this.waitingCaseSensitiveFlag;
+
+    this.selector.attributes = this.selector.attributes || {};
+    let currentAttributePair = this.selector.attributes[this.attributeName];
+    switch (c) {
+      case 'i':
+        currentAttributePair.isCaseInsensitive = true;
+        return this.afterCaseSensitiveFlag;
+      case this.EOF:
+      default:
+        throw new Error('some errors in your selector');
+    }
+  }
+  afterCaseSensitiveFlag(c) {
+    switch (c) {
+      case ' ':
+        return this.afterCaseSensitiveFlag;
       case ']':
         this.emit({
           type: 'attribute',
@@ -163,6 +276,35 @@ class ParseComplexSelector {
       case this.EOF:
       default:
         throw new Error('some errors in your selector');
+    }
+  }
+  doubleQuotedValueState(c) {
+    switch (c) {
+      case '\u0022': // quotation mark "
+        return this.afterQuptedAttributeValue;
+      case this.EOF:
+      default:
+        this.attributeValue += c;
+        return this.doubleQuotedValueState;
+    }
+  }
+  singleQuotedValueState(c) {
+    switch (c) {
+      case '\u0027': // apostrophe (')
+        return this.afterQuptedAttributeValue;
+      default:
+        this.attributeValue += c;
+        return this.singleQuotedValueState;
+    }
+  }
+  afterQuptedAttributeValue(c) {
+    if (c === ']') {
+      this.emit({
+        type: 'attribute',
+      });
+      return this.dataState;
+    } else {
+      throw new Error('some errors in your selector');
     }
   }
 }
@@ -211,11 +353,43 @@ function match(selector, element) {
 
             case 'attributes':
               let attributes = Object.keys(parsedSelectors.attributes);
-              isMatched = attributes.every(
-                (attr) =>
-                  parsedSelectors.attributes[attr] ===
-                  currentElement.getAttribute(attr)
-              );
+              isMatched = attributes.every((attr) => {
+                let selectorAttr = parsedSelectors.attributes[attr];
+                let selectorAttrValue = selectorAttr.value;
+                let domElementAttrValue = currentElement.getAttribute(attr);
+
+                if (!domElementAttrValue) return false;
+
+                if (selectorAttr.isCaseInsensitive) {
+                  domElementAttrValue = domElementAttrValue.toLowerCase();
+                }
+
+                switch (selectorAttr.type) {
+                  case 'exactlyValue': // [attr=value]
+                    return selectorAttrValue === domElementAttrValue;
+                  case 'valueList': // [attr~=value]
+                    return selectorAttrValue.includes(domElementAttrValue);
+                  case 'valuePrefix': // [attr^=value]
+                    return domElementAttrValue.indexOf(selectorAttrValue) === 0;
+                  case 'valueSuffix': // [attr$=value]
+                    return (
+                      domElementAttrValue.indexOf(
+                        selectorAttrValue,
+                        domElementAttrValue.length - selectorAttrValue.length
+                      ) !== -1
+                    );
+                  case 'valueIncluds': // [attr*=value]
+                    return (
+                      domElementAttrValue.indexOf(selectorAttrValue) !== -1
+                    );
+                  case 'valueSubMatch': // [attr|=value]
+                    let hypenIndex = domElementAttrValue.indexOf('-');
+                    return (
+                      selectorAttrValue ===
+                      domElementAttrValue.substring(0, hypenIndex)
+                    );
+                }
+              });
               break;
 
             case 'class':
@@ -244,4 +418,5 @@ function match(selector, element) {
   if (i < 0) return true;
   return false;
 }
+// match('body ul a[href^="#"]', $0)
 ```

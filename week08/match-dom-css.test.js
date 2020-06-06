@@ -100,4 +100,15 @@ describe('parse complex css selectors', () => {
       },
     });
   });
+  it('can parse special characters', () => {
+    let complexSelector = 'a[href="http://example.com"]';
+    let selector = parseSelector.parse(complexSelector);
+    expect(selector.tag).toEqual('a');
+    expect(selector.attributes).toEqual({
+      href: {
+        type: 'exactlyValue',
+        value: 'http://example.com',
+      },
+    });
+  });
 });

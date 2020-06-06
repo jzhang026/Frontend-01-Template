@@ -194,9 +194,6 @@ class ParseComplexSelector {
   }
 
   attributeValueState(c) {
-    if (c.match && c.match(/^[a-zA-Z0-9\-_]$/)) {
-      return this.unquotedAttributeValueState(c);
-    }
     switch (c) {
       case ']':
         this.emit({
@@ -207,16 +204,11 @@ class ParseComplexSelector {
         return this.doubleQuotedValueState;
       case '\u0027': // quotation mark "
         return this.singleQuotedValueState;
-      case this.EOF:
       default:
-        throw new Error('some errors in your selector');
+        return this.unquotedAttributeValueState(c);
     }
   }
   unquotedAttributeValueState(c) {
-    if (c.match && c.match(/^[a-zA-Z0-9\-_]$/)) {
-      this.attributeValue += c;
-      return this.unquotedAttributeValueState;
-    }
     switch (c) {
       case ']':
         this.emit({
@@ -225,9 +217,9 @@ class ParseComplexSelector {
         return this.dataState;
       case ' ':
         return this.waitingCaseSensitiveFlag;
-      case this.EOF:
       default:
-        throw new Error('some errors in your selector');
+        this.attributeValue += c;
+        return this.unquotedAttributeValueState;
     }
   }
   waitingCaseSensitiveFlag(c) {
@@ -259,29 +251,22 @@ class ParseComplexSelector {
     }
   }
   doubleQuotedValueState(c) {
-    if (c.match && c.match(/^[a-zA-Z0-9\-_\s]$/)) {
-      this.attributeValue += c;
-      return this.doubleQuotedValueState;
-    }
     switch (c) {
       case '\u0022': // quotation mark "
         return this.afterQuptedAttributeValue;
       case this.EOF:
       default:
-        throw new Error('some errors in your selector');
+        this.attributeValue += c;
+        return this.doubleQuotedValueState;
     }
   }
   singleQuotedValueState(c) {
-    if (c.match && c.match(/^[a-zA-Z0-9\-_\s]$/)) {
-      this.attributeValue += c;
-      return this.singleQuotedValueState;
-    }
     switch (c) {
       case '\u0027': // apostrophe (')
         return this.afterQuptedAttributeValue;
-      case this.EOF:
       default:
-        throw new Error('some errors in your selector');
+        this.attributeValue += c;
+        return this.singleQuotedValueState;
     }
   }
   afterQuptedAttributeValue(c) {
@@ -341,35 +326,38 @@ function match(selector, element) {
             case 'attributes':
               let attributes = Object.keys(parsedSelectors.attributes);
               isMatched = attributes.every((attr) => {
-                let selecorAttrValue = parsedSelectors.attributes[attr];
+                let selectorAttr = parsedSelectors.attributes[attr];
+                let selectorAttrValue = selectorAttr.value;
                 let domElementAttrValue = currentElement.getAttribute(attr);
 
                 if (!domElementAttrValue) return false;
 
-                if (attr.isCaseInsensitive) {
+                if (selectorAttr.isCaseInsensitive) {
                   domElementAttrValue = domElementAttrValue.toLowerCase();
                 }
 
-                switch (attr.type) {
+                switch (selectorAttr.type) {
                   case 'exactlyValue': // [attr=value]
-                    return selecorAttrValue === domElementAttrValue;
+                    return selectorAttrValue === domElementAttrValue;
                   case 'valueList': // [attr~=value]
-                    return selecorAttrValue.includes(domElementAttrValue);
+                    return selectorAttrValue.includes(domElementAttrValue);
                   case 'valuePrefix': // [attr^=value]
-                    return domElementAttrValue.indexOf(selecorAttrValue) === 0;
+                    return domElementAttrValue.indexOf(selectorAttrValue) === 0;
                   case 'valueSuffix': // [attr$=value]
                     return (
                       domElementAttrValue.indexOf(
-                        selecorAttrValue,
-                        domElementAttrValue.length - selecorAttrValue.length
+                        selectorAttrValue,
+                        domElementAttrValue.length - selectorAttrValue.length
                       ) !== -1
                     );
                   case 'valueIncluds': // [attr*=value]
-                    return domElementAttrValue.indexOf(selecorAttrValue) !== -1;
+                    return (
+                      domElementAttrValue.indexOf(selectorAttrValue) !== -1
+                    );
                   case 'valueSubMatch': // [attr|=value]
                     let hypenIndex = domElementAttrValue.indexOf('-');
                     return (
-                      selecorAttrValue ===
+                      selectorAttrValue ===
                       domElementAttrValue.substring(0, hypenIndex)
                     );
                 }
