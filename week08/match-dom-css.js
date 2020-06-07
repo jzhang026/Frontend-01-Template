@@ -1,3 +1,15 @@
+// 这里的选择器selectors 支持:
+//
+// 1. 复合选择器~, +, >
+// 2. 复杂选择器，比如 div + #my-id.my-class.another-class[name=value]
+// 3. 各种属性选择器：
+//  [attr=value]
+//  [attr~=value]
+//  [attr^=value]
+//  [attr$=value]
+//  [attr*=value]
+//  [attr|=value]
+
 // parse complex css selectors, such as 'div#my-id.my-class[foo=bar]'
 class ParseComplexSelector {
   constructor() {
