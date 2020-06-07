@@ -1,21 +1,8 @@
 #### 编写一个 match 函数，完善你的 toy-browser
 
-你可以将下面这份代码贴到任意一个网页的控制台。
-然后 `match(selectors, domElement)` 来调用。
+此函数用来检测是否一个web DOM元素与所提供的CSS选择器匹配。
 
-```javascript
-match('div > #main.my-class[foo^=bar]', document.getElementById(#main))
-```
-
-### 工作原理解释：
-
-代码分为两个部分：
-
-1. class `ParseComplexSelector`
-   通过使用 state machine 来解析我们传入的复杂选择器，具体的用例可以参考的[单元测试](https://github.com/jzhang026/Frontend-01-Template/blob/master/week08/match-dom-css.test.js)
-
-2. `match`函数
-   真正用来做 DOM 和 CSS 选择器的匹配判断。这里的 `selectors` 支持:
+这里的选择器`selectors` 支持:
 
    1. 复合选择器`~`, `+`, `>`
    2. 复杂选择器，比如 `div + #my-id.my-class.another-class[name=value]`
@@ -27,6 +14,25 @@ match('div > #main.my-class[foo^=bar]', document.getElementById(#main))
       5. `[attr*=value]`
       6. `[attr|=value]`
 
+### 工作原理解释：
+
+代码分为两个部分：
+
+1. class `ParseComplexSelector`
+   通过使用 state machine 来解析我们传入的复杂选择器，具体的用例可以参考的[单元测试](https://github.com/jzhang026/Frontend-01-Template/blob/master/week08/match-dom-css.test.js)
+
+2. `match`函数
+   真正用来做 DOM 和 CSS 选择器的匹配判断。
+
+#### 怎么使用
+
+```javascript
+match('div > #main.my-class[foo^=bar]', document.getElementById(#main))；
+match('body ul a[href^="#"]', $0)；
+```
+在使用前，可以将下面的代码先复制到你的某个网页的控制台中。
+
+#### 这里是真正的代码部分
 ```javascript
 // parse complex css selectors, such as 'div#my-id.my-class[foo=bar]'
 class ParseComplexSelector {
@@ -427,3 +433,4 @@ function match(selector, element) {
 }
 // match('body ul a[href^="#"]', $0)
 ```
+[完整代码](https://github.com/jzhang026/Frontend-01-Template/blob/master/week08/match-dom-css.js)
