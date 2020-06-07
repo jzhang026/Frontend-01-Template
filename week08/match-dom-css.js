@@ -373,9 +373,13 @@ function match(selector, element) {
               break;
 
             case 'tag':
-              isMatched =
-                parsedSelectors.tag.toUpperCase() ===
-                currentElement.tagName.toUpperCase();
+              if (parsedSelectors.tag === '*') {
+                isMatched = true;
+              } else {
+                isMatched =
+                  parsedSelectors.tag.toUpperCase() ===
+                  currentElement.tagName.toUpperCase();
+              }
           }
           if (!isMatched) break;
           numberOfTypes--;
