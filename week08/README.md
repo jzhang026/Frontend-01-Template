@@ -4,7 +4,7 @@
 然后 `match(selectors, domElement)` 来调用。
 
 ```javascript
-match('div > #main.my-class[foo*=bar]', document.getElementById(#main))
+match('div > #main.my-class[foo^=bar]', document.getElementById(#main))
 ```
 
 ###工作原理解释：
