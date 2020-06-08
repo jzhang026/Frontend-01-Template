@@ -319,9 +319,16 @@ class ParseComplexSelector {
   }
 }
 
+function sanitizeSelector(selector) {
+  return selector
+    .replace(/\s*([>+~])\s*/g, '$1')
+    .replace(/\s+/g, ' ') // collapase redudant space
+    .split(/(?=[>~+])|(?<=[>~+])|\s(?=[^\]]*\[)/g); // split css selectors
+}
+
 // match function
 function match(selector, element) {
-  const selectors = selector.split(' ');
+  const selectors = sanitizeSelector(selector);
   if (!element || selectors.length === 0) return false;
   let currentElement = element;
   let i = selectors.length - 1;
