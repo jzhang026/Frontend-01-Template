@@ -332,7 +332,7 @@ function match(selector, element) {
           switch (selectorType) {
             case 'id':
               isMatched =
-                currentElement.getAttribute('id') !== parsedSelectors.id;
+                currentElement.getAttribute('id') === parsedSelectors.id;
               break;
 
             case 'attributes':
