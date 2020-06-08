@@ -297,7 +297,7 @@ function sanitizeSelector(selector) {
   return selector
     .replace(/\s*([>+~])\s*/g, '$1')
     .replace(/\s+/g, ' ') // collapase redudant space
-    .split(/(?=[>~+])|(?<=[>~+])|\s(?=[^\]]*\[)/g); // split css selectors
+    .split(/(?=[>~+])|(?<=[>~+])|\s(?=[^\]]*?(?:\[|$))/g); // split css selectors
 }
 
 // match function
