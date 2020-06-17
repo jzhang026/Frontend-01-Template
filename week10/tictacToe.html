@@ -1,0 +1,157 @@
+<style>
+  .cell {
+    width: 100px;
+    height: 100px;
+    border: 1px solid;
+    display: inline-block;
+    background-color: green;
+    vertical-align: middle;
+    line-height: 100px;
+    font-size: 50px;
+    text-align: center;
+  }
+</style>
+<script>
+  const STATUS_O = 1;
+  const STATUS_X = 2;
+  const emojiMap = {
+    [STATUS_O]: '⭕️',
+    [STATUS_X]: '❌',
+  };
+  const pattern = [
+    [STATUS_X, STATUS_O, 0],
+    [0, STATUS_X, 0],
+    [0, 0, STATUS_O],
+  ];
+
+  function render() {
+    let board = document.getElementById('container');
+    if (board.childNodes) {
+      while (board.childNodes.length > 0)
+        board.removeChild(board.childNodes[0]);
+    }
+    let height = pattern.length;
+    let width = pattern[0].length;
+    for (let i = 0; i < height; i++) {
+      for (let j = 0; j < width; j++) {
+        let cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.innerHTML = emojiMap[pattern[i][j]] || '';
+        cell.addEventListener('click', () => move(j, i));
+        board.append(cell);
+      }
+      let breakLine = document.createElement('br');
+      board.append(breakLine);
+    }
+  }
+  let color = STATUS_O;
+
+  function move(j, i) {
+    if (pattern[i][j] !== 0) return;
+    pattern[i][j] = color;
+    let checkedResult = false;
+    if ((checkedResult = check(pattern, color)))
+      console.log(emojiMap[color] + ' win');
+    color = 3 - color;
+    computerMove();
+    render();
+    if (!checkedResult && willWin(pattern, color))
+      console.log(emojiMap[color] + ' will win');
+  }
+  function check(pattern, color) {
+    for (let i = 0; i < 3; i++) {
+      let win = true;
+      for (let j = 0; j < 3; j++) {
+        if (pattern[i][j] != color) {
+          win = false;
+          break;
+        }
+      }
+      if (win) return true;
+    }
+
+    for (let i = 0; i < 3; i++) {
+      let win = true;
+      for (let j = 0; j < 3; j++) {
+        if (pattern[j][i] != color) {
+          win = false;
+          break;
+        }
+      }
+      if (win) return true;
+    }
+
+    {
+      let win = true;
+      for (let j = 0; j < 3; j++) {
+        if (pattern[j][j] != color) {
+          win = false;
+          break;
+        }
+      }
+      if (win) return true;
+    }
+
+    {
+      let win = true;
+      for (let j = 0; j < 3; j++) {
+        if (pattern[j][2 - j] != color) {
+          win = false;
+          break;
+        }
+      }
+      if (win) return true;
+    }
+  }
+  function clone(pattern) {
+    return JSON.parse(JSON.stringify(pattern));
+  }
+  function willWin(pattern, color) {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (pattern[i][j] !== 0) continue;
+        let tmp = clone(pattern);
+        tmp[i][j] = color;
+        if (check(tmp, color)) return [j, i];
+      }
+    }
+    return null;
+  }
+
+  function bestChoice(pattern, color) {
+    let point = null;
+    if ((point = willWin(pattern, color))) {
+      return {
+        point: point,
+        result: 1,
+      };
+    }
+    let result = -1;
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (pattern[i][j] !== 0) continue;
+        let tmp = clone(pattern);
+        tmp[i][j] = color;
+        let opponent = bestChoice(tmp, 3 - color);
+        if (-opponent.result >= result) {
+          point = [j, i];
+          result = -opponent.result;
+        }
+      }
+    }
+    return {
+      point: point,
+      result: point ? result : 0,
+    };
+  }
+
+  function computerMove() {
+    let choice = bestChoice(pattern, color);
+    if (choice.point) pattern[choice.point[1]][choice.point[0]] = color;
+    let checkedResult = false;
+    if (check(pattern, color)) console.log(emojiMap[color] + ' win');
+    color = 3 - color;
+  }
+</script>
+<body onload="render()"></body>
+<div id="container"></div>

@@ -1,0 +1,202 @@
+<style>
+  .cell {
+    width: 100px;
+    height: 100px;
+    border: 1px solid;
+    display: inline-block;
+    background-color: green;
+    vertical-align: middle;
+    line-height: 100px;
+    font-size: 50px;
+    text-align: center;
+  }
+</style>
+<script>
+  // 定义棋子状态
+  const STATUS_O = 1;
+  const STATUS_X = 2;
+  const emojiMap = {
+    [STATUS_O]: '⭕️',
+    [STATUS_X]: '❌',
+  };
+  let nextActive = STATUS_X;
+  // 定义棋盘
+  function Board(game) {
+    this.game = game;
+    this.nextActive = game.getStatus().nextActive;
+    this.boardDomElement = document.getElementById('container');
+    this.boardDomElement.addEventListener(
+      'click',
+      (event) => {
+        let target = event.target;
+        let x = target.getAttribute('data-x');
+        let y = target.getAttribute('data-y');
+        let status = target.getAttribute('data-status');
+        if (status !== '0') return;
+        this.game.handleClick(x, y);
+        let state = this.game.getStatus().state;
+        Cell.update(target, state[y][x]);
+      },
+      false /* trigger in bubble phase */
+    );
+  }
+  Board.prototype.render = function () {
+    let state = this.game.getStatus().state;
+    for (let y = 0; y < 3; y++) {
+      for (let x = 0; x < 3; x++) {
+        let currentCell = new Cell(x, y, state[y][x]);
+        currentCell.render(this.boardDomElement);
+      }
+      // 渲染完一行，插入断行，形成棋盘横纵
+      this.boardDomElement.append(document.createElement('br'));
+    }
+  };
+
+  // 定义棋子对象
+  function Cell(x, y, status) {
+    this.status = status;
+    this.x = x;
+    this.y = y;
+    this.cellDomElement = null;
+  }
+  Cell.prototype.render = function (boardDomElement) {
+    let cell = (this.cellDomElement = document.createElement('div'));
+    cell.classList.add('cell');
+    cell.setAttribute('data-x', this.x);
+    cell.setAttribute('data-y', this.y);
+    Cell.update(cell, this.status);
+    boardDomElement.append(cell);
+  };
+  Cell.update = function (cellDomElement, status) {
+    cellDomElement.setAttribute('data-status', status);
+    cellDomElement.innerText = emojiMap[status] || '';
+  };
+
+  // 定义游戏
+  function Game(initState, nextActive) {
+    if (typeof initState === 'undefined') {
+      initState = [
+        [0, 0, 0],
+        [0, STATUS_O, 0],
+        [0, 0, 0],
+      ];
+    }
+    if (typeof nextActive === 'undefined') {
+      nextActive = STATUS_X;
+    }
+
+    this.state = initState;
+    this.nextActive = nextActive;
+    this.history = [];
+  }
+  Game.prototype.handleClick = function (x, y) {
+    this.state[y][x] = this.nextActive;
+    if (this.checkWin(this.state, this.nextActive))
+      console.log(emojiMap[this.nextActive] + ' win');
+    this.nextActive = 3 - this.nextActive;
+  };
+  Game.prototype.getStatus = function () {
+    return {
+      state: this.state,
+      nextActive: this.nextActive,
+    };
+  };
+  Game.prototype.checkWin = function (pattern, color) {
+    for (let i = 0; i < 3; i++) {
+      let win = true;
+      for (let j = 0; j < 3; j++) {
+        if (pattern[i][j] != color) {
+          win = false;
+          break;
+        }
+      }
+      if (win) return true;
+    }
+
+    for (let i = 0; i < 3; i++) {
+      let win = true;
+      for (let j = 0; j < 3; j++) {
+        if (pattern[j][i] != color) {
+          win = false;
+          break;
+        }
+      }
+      if (win) return true;
+    }
+
+    {
+      let win = true;
+      for (let j = 0; j < 3; j++) {
+        if (pattern[j][j] != color) {
+          win = false;
+          break;
+        }
+      }
+      if (win) return true;
+    }
+
+    {
+      let win = true;
+      for (let j = 0; j < 3; j++) {
+        if (pattern[j][2 - j] != color) {
+          win = false;
+          break;
+        }
+      }
+      if (win) return true;
+    }
+  };
+
+  Game.prototype.willWin = function (pattern, color) {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (pattern[i][j] !== 0) continue;
+        let tmp = clone(pattern);
+        tmp[i][j] = color;
+        if (check(tmp, color)) return [j, i];
+      }
+    }
+    return null;
+  };
+  Game.prototype.bestChoice = function (pattern, color) {
+    let point = null;
+    if ((point = willWin(pattern, color))) {
+      return {
+        point: point,
+        result: 1,
+      };
+    }
+    let result = -1;
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (pattern[i][j] !== 0) continue;
+        let tmp = clone(pattern);
+        tmp[i][j] = color;
+        let opponent = bestChoice(tmp, 3 - color);
+        if (-opponent.result >= result) {
+          point = [j, i];
+          result = -opponent.result;
+        }
+      }
+    }
+    return {
+      point: point,
+      result: point ? result : 0,
+    };
+  };
+  Game.prototype.computerMove = function () {
+    let choice = bestChoice(pattern, color);
+    if (choice.point) pattern[choice.point[1]][choice.point[0]] = color;
+    let checkedResult = false;
+    if (check(pattern, color)) console.log(emojiMap[color] + ' win');
+    color = 3 - color;
+  };
+  // 程序入口
+  function init() {
+    const game = new Game();
+    new Board(game).render();
+  }
+</script>
+
+<body onload="init()"></body>
+<div id="container"></div>
