@@ -1,0 +1,81 @@
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30
+31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57
+58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84
+85
+<style>
+  div {
+    background-color: grey;
+    display: inline-block;
+    margin: 30px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50px;
+  }
+  .green.light {
+    background-color: green;
+  }
+  .yellow.light {
+    background-color: yellow;
+  }
+  .red.light {
+    background-color: red;
+  }
+</style>
+
+<div class="green"></div>
+<div class="yellow"></div>
+<div class="red"></div>
+
+<button id="next">next</button>
+
+<script>
+  function green() {
+    var lights = document.getElementsByTagName('div');
+    for (var i = 0; i < 3; i++) lights[i].classList.remove('light');
+    document.getElementsByClassName('green')[0].classList.add('light');
+  }
+  function red() {
+    var lights = document.getElementsByTagName('div');
+    for (var i = 0; i < 3; i++) lights[i].classList.remove('light');
+    document.getElementsByClassName('red')[0].classList.add('light');
+  }
+  function yellow() {
+    var lights = document.getElementsByTagName('div');
+    for (var i = 0; i < 3; i++) lights[i].classList.remove('light');
+    document.getElementsByClassName('yellow')[0].classList.add('light');
+  }
+
+  function sleep(t) {
+    return new Promise((resolve, reject) => {
+      setTimeout(resolve, t);
+    });
+  }
+
+  function* go() {
+    while (true) {
+      green();
+      yield sleep(1000);
+      yellow();
+      yield sleep(200);
+      red();
+      yield sleep(500);
+    }
+  }
+
+  function run(iterator) {
+    let { value, done } = iterator.next();
+    if (done) return;
+    if (value instanceof Promise)
+      value.then(() => {
+        run(iterator);
+      });
+  }
+
+  function co(generator) {
+    return function () {
+      return run(generator());
+    };
+  }
+
+  go = co(go);
+</script>
