@@ -1,0 +1,45 @@
+<script>
+  function find(source, pattern) {
+    let j = 0;
+    for (let i = 0; i < source.length; i++) {
+      if (source[i] === pattern[j]) {
+        j++;
+      } else {
+        let k = 0;
+        while (k < j) {
+          if (source[i + k - j] !== pattern[k]) break;
+          k++;
+        }
+        j = k;
+      }
+      if (j === pattern.length) return i - j + 1;
+    }
+    return -1;
+  }
+
+  function findKMP(source, pattern) {
+    let table = Array(pattern.length).fill(0);
+
+    let k = 0;
+    for (let j = 1; j < pattern.length; j++) {
+      if (pattern[j] === pattern[k]) {
+        k++;
+      } else {
+        k = 0;
+      }
+      table[j] = k;
+    }
+
+    let j = 0;
+    for (let i = 0; i < source.length; i++) {
+      if (source[i] === pattern[j]) {
+        j++;
+      } else {
+        j = table[j - 1];
+        if (source[i] === pattern[j]) j++;
+      }
+      if (j === pattern.length) return true;
+    }
+    return false;
+  }
+</script>

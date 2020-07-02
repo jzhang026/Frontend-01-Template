@@ -1,0 +1,25 @@
+<script>
+  function parse(source) {
+    let stack = [];
+    let match = {
+      '}': '{',
+      ']': '[',
+      ')': '(',
+    };
+    for (let c of source) {
+      switch (c) {
+        case '(':
+        case '[':
+        case '{':
+          stack.push(c);
+          break;
+        case ')':
+        case ']':
+        case '}':
+          if (match[c] && match[c] !== stack.pop()) return false;
+      }
+    }
+    if (stack.length === 0) return true;
+    return false;
+  }
+</script>

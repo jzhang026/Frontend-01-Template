@@ -1,0 +1,147 @@
+<script>
+  var regexp = /([0-9\.]+)|([ ]+)|([\r\n]+)|(\+)|(\-)|(\*)|(\/)/g;
+  var dictionary = [
+    'Source',
+    'Number',
+    'Whitespace',
+    'LineTerminator',
+    'plus',
+    'minus',
+    'multiply',
+    'divide',
+  ];
+  function* tokenize(source) {
+    var result = null;
+    var lastIndex = 0;
+    do {
+      lastIndex = regexp.lastIndex;
+      result = regexp.exec(source);
+      if (!result) break;
+      if (regexp.lastIndex - lastIndex > result[0].length)
+        console.error(
+          'Unexpected token ' +
+            source.slice(lastIndex, regexp.lastIndex - result[0].length)
+        );
+      let token = {
+        type: null,
+        value: null,
+      };
+      for (var i = 1; i < 7; i++) {
+        if (result[i]) {
+          token.type = dictionary[i];
+          token.value = result[i];
+          break;
+        }
+      }
+      yield token;
+    } while (result);
+    yield { type: 'EOF' };
+  }
+  function Expression(source) {
+    if (source[0].type == 'AdditiveExpression' && source[1].type === 'EOF') {
+      let node = {
+        type: 'Expression',
+        children: [source.shift(), source.shift()],
+      };
+      source.unshift(node);
+      return node;
+    }
+    AdditiveExpression(source);
+    return Expression(source);
+  }
+
+  function AdditiveExpression(source) {
+    if (source[0].type === 'Number') {
+      MulplicativeExpression(source);
+      return AdditiveExpression(source);
+    }
+
+    if (source[0].type === 'MulplicativeExpression') {
+      let node = {
+        type: 'AdditiveExpression',
+        children: [source.shift()],
+      };
+      source.unshift(node);
+      return AdditiveExpression(source);
+    }
+    if (
+      source[0].type === 'AdditiveExpression' &&
+      source.length > 1 &&
+      source[1].type === 'plus'
+    ) {
+      let node = {
+        type: 'AdditiveExpression',
+        children: [source.shift(), source.shift()],
+      };
+      MulplicativeExpression(source);
+      node.children.push(source.shift());
+      source.unshift(node);
+      return AdditiveExpression(source);
+    }
+
+    if (
+      source[0].type === 'AdditiveExpression' &&
+      source.length > 1 &&
+      source[1].type === 'minus'
+    ) {
+      let node = {
+        type: 'AdditiveExpression',
+        children: [source.shift(), source.shift()],
+      };
+      MulplicativeExpression(source);
+      node.children.push(source.shift());
+      source.unshift(node);
+      return AdditiveExpression(source);
+    }
+
+    if (source[0].type === 'AdditiveExpression') return source[0];
+    throw new Error();
+  }
+  function MulplicativeExpression(source) {
+    if (source[0].type === 'Number') {
+      let node = {
+        type: 'MulplicativeExpression',
+        children: source.shift(),
+      };
+      source.unshift(node);
+      return MulplicativeExpression(source);
+    }
+    if (
+      source[0].type === 'MulplicativeExpression' &&
+      source.length > 1 &&
+      source[1].type === 'multiply'
+    ) {
+      let node = {
+        type: 'MulplicativeExpression',
+        children: [source.shift(), source.shift(), source.shift()],
+      };
+      source.unshift(node);
+      return MulplicativeExpression(source);
+    }
+    if (
+      source[0].type === 'MulplicativeExpression' &&
+      source.length > 1 &&
+      source[1].type === 'divide'
+    ) {
+      let node = {
+        type: 'MulplicativeExpression',
+        children: [source.shift(), source.shift(), source.shift()],
+      };
+      source.unshift(node);
+      return MulplicativeExpression(source);
+    }
+    if (source[0].type === 'MulplicativeExpression') return source[0];
+    throw Error();
+  }
+  let source = [];
+
+  for (let token of tokenize('1024 * 2 + 8')) {
+    if (
+      ['Number', 'plus', 'minus', 'multiply', 'divide', 'EOF'].includes(
+        token.type
+      )
+    )
+      source.push(token);
+  }
+  console.log(Expression(source));
+</script>

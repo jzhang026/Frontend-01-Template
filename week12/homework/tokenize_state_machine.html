@@ -1,0 +1,105 @@
+<script>
+  function StateMachineTokenize(source) {
+    this.tokens = [];
+    this.currentNumber = '';
+    this.dataState = this.dataState.bind(this);
+    this.numnberState = this.numnberState.bind(this);
+    this.numbserSign = this.numbserSign.bind(this);
+    this.watingForOperator = this.watingForOperator.bind(this);
+    this.watingForNumber = this.watingForNumber.bind(this);
+
+    let state = this.dataState;
+    for (let i of source) {
+      state = state(i);
+    }
+    this.flush();
+  }
+  StateMachineTokenize.prototype.flush = function (token) {
+    this.emitToken({
+      type: 'number',
+      value: Number(this.currentNumber),
+    });
+    this.currentNumber = '';
+  };
+  StateMachineTokenize.prototype.getTokens = function (token) {
+    return this.tokens;
+  };
+  StateMachineTokenize.prototype.emitToken = function (token) {
+    this.tokens.push(token);
+  };
+  StateMachineTokenize.prototype.dataState = function (c) {
+    if (c.match(/[0-9]/)) return this.numnberState(c);
+    switch (c) {
+      case '\r':
+      case '\n':
+      case ' ':
+        return this.dataState;
+      case '+':
+      case '-':
+        return this.numbserSign(c);
+      default:
+        throw Error('invalid charactore');
+    }
+  };
+  StateMachineTokenize.prototype.numnberState = function (c) {
+    if (c.match(/[0-9]/)) {
+      this.currentNumber += c;
+      return this.numnberState;
+    }
+    switch (c) {
+      case '\r':
+      case '\n':
+      case ' ':
+        this.emitToken({
+          type: 'number',
+          value: Number(this.currentNumber),
+        });
+        this.currentNumber = '';
+        return this.watingForOperator;
+      default:
+        throw Error('invalid character');
+    }
+  };
+  StateMachineTokenize.prototype.numbserSign = function (c) {
+    if (c.match(/[\+\-]/)) {
+      this.currentNumber += c;
+      return this.numnberState;
+    }
+    throw Error('invalid character');
+  };
+  StateMachineTokenize.prototype.watingForOperator = function (c) {
+    if (c.match(/[\+\-\*\\]/)) {
+      this.emitToken({
+        type: 'operator',
+        value: c,
+      });
+      return this.watingForNumber;
+    }
+    switch (c) {
+      case '\r':
+      case '\n':
+      case ' ':
+        return this.watingForOperator;
+      default:
+        throw Error('invalid character');
+    }
+  };
+
+  StateMachineTokenize.prototype.watingForNumber = function (c) {
+    if (c.match(/[0-9]/)) return this.numnberState(c);
+    switch (c) {
+      case '\r':
+      case '\n':
+      case ' ':
+        return this.watingForNumber;
+      default:
+        throw Error('invalid character');
+    }
+  };
+
+  function tokenize(source) {
+    let tokenization = new StateMachineTokenize(source);
+    console.log(tokenization.getTokens());
+  }
+  tokenize('1024 + 10 * 25');
+</script>

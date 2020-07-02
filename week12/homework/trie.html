@@ -1,0 +1,55 @@
+<script>
+  class Trie {
+    constructor() {
+      this.root = Object.create(null);
+    }
+
+    insert(word) {
+      let node = this.root;
+      for (let c of word) {
+        if (!node[c]) {
+          node[c] = Object.create(null);
+        }
+        node = node[c];
+      }
+      if (!('$' in node)) node['$'] = 0;
+      node['$']++;
+    }
+    getHotWord() {
+      let max = 0;
+      let maxPath = [];
+      function getNumber(curr, path) {
+        if (typeof curr['$'] !== 'undefined') {
+          if (curr['$'] > max) {
+            max = curr['$'];
+            maxPath = path.slice();
+          }
+          console.log(JSON.stringify(path), curr['$']);
+          return;
+        }
+        for (let c in curr) {
+          path.push(c);
+          getNumber(curr[c], path);
+          path.pop();
+        }
+      }
+      getNumber(this.root, []);
+      return {
+        max: max,
+        path: maxPath,
+      };
+    }
+  }
+
+  function randomWord(length) {
+    var s = '';
+    for (let i = 0; i < length; i++) {
+      s += String.fromCharCode(Math.random() * 26 + 'a'.charCodeAt(0));
+    }
+    return s;
+  }
+  let trie = new Trie();
+  for (let i = 0; i < 10000; i++) {
+    trie.insert(randomWord(3));
+  }
+</script>
