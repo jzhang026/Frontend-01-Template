@@ -40,7 +40,7 @@ function computeStateTable(pattern) {
 function match(string, pattern) {
   let m = pattern.length;
   let n = string.length;
-  if (!m || !n) return 0;
+  if (!m || !n) return -1;
   let stateTable = computeStateTable(pattern);
 
   let state = 0;
