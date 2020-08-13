@@ -9,6 +9,7 @@
 # NodeJS, testing with Mocha and code converage with NYC
 
 You’re done with your node app and you need to test, well there are many ways by which we can carry out our test. Here is a fun and easy way to carry out test.
+
 > Mocha, a javascript test framework https://mochajs.org/
 
 So istanbul/nyc is a code coverage tool which works well with mocha, they are simple and easy tools that make testing easy.
@@ -29,6 +30,8 @@ With mocha we can run unit, integration and functional testing, unit test which 
 
 Mocha can be written in different styles eg BDD, TDD
 
+![image](https://github.com/jzhang026/Frontend-01-Template/blob/master/week18/image/NOTE.png)
+
 First we describe what the test is about .
 
 - In line 84 we then use the it() function to tell what exactly we want the test to do, within the it() function we perform our request and assertions.
@@ -43,8 +46,3 @@ First we describe what the test is about .
 2. Promises
 
 For code coverage we can use istanbul/nyc, this tracks the test done on our code, shows what lines have been covered and also what hasn’t been covered.
-
-It provides this in a nice tabular format.
-placeholder image
-
-There are other tools used for testing, mocha and nyc are but one.
